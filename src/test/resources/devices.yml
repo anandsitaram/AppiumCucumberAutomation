@@ -1,0 +1,19 @@
+#userName: Required for Cloud Mobile Lab
+#accessKey:  Required for Cloud Mobile Lab
+appName: My Demo Path
+newCommandTimeout: 30
+noReset: false
+fullReset: false
+platforms:
+  - platformName: Android
+    app: /app/Android-MyDemoAppRN.1.3.0.build-244.apk
+    deviceName: Pixel_3a_API_34_extension_level_7_x86_64
+    deviceId: emulator-5554
+    platformVersion: 14.0
+    appPackage: com.saucelabs.mydemoapp.rn
+    appActivity: com.saucelabs.mydemoapp.rn.MainActivity
+    automationName: UiAutomator2
+    port: 4723
+browserstackLocal: true
+buildName: browserstack-build-1
+projectName: BrowserStack Sample
