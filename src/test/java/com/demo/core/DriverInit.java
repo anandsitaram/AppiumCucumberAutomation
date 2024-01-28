@@ -1,25 +1,24 @@
 package com.demo.core;
 
-import com.demo.constants.FrameworkConstants;
+import com.demo.drivers.DriverInstance;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.options.UiAutomator2Options;
+import io.appium.java_client.screenrecording.CanRecordScreen;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 
 public class DriverInit {
 
     private static AppiumDriver driver;
     private static AppiumDriverLocalService service;
 
-    public static AppiumDriver setUp(String platform){
-
+    public static void setUp(String platform){
+/*
+        *//**
         //TODO SetUp
 
         Map<String, Object> deviceConfigs = DeviceSetUp.getValue("emulator-5554");
@@ -27,13 +26,12 @@ public class DriverInit {
         if(!file.exists()){
             throw new RuntimeException("App Does not exists in the given path");
         }
-        service = AppiumDriverLocalService.buildDefaultService();
+     /*  service = AppiumDriverLocalService.buildDefaultService();
         if(Objects.nonNull(service)){
             service.stop();
         }
-        service.start();
+        service.start();*//*
         UiAutomator2Options options = new UiAutomator2Options()
-               // .setDeviceName("pixel_6_pro")
                 .setDeviceName(deviceConfigs.get("deviceId").toString())
                 .setAppPackage(deviceConfigs.get("appPackage").toString())
                 .setAppActivity(deviceConfigs.get("appActivity").toString())
@@ -44,19 +42,40 @@ public class DriverInit {
                 .setNoReset((Boolean) deviceConfigs.get("noReset"))
                 .setFullReset((Boolean) deviceConfigs.get("fullReset"));
         try {
-            driver = new AndroidDriver(
-                    new URL("http://127.0.0.1:4723"), options
-            );
+
+            //Appium 2
+           // driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), options );
+
+            driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), options );
+            //driver = new AndroidDriver(service, options);
+
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return  driver;*/
+
+        DriverInstance.initDriver("android");
+
+    }
+
+
+    public static void startVideoRecording(){
+        ((CanRecordScreen) DriverInstance.getDriver()).startRecordingScreen();
+    }
+
+    public static void stopVideoRecording() {
+        String base64String = ((CanRecordScreen) DriverInstance.getDriver()).stopRecordingScreen();
+        byte[] data = Base64.getDecoder().decode(base64String);
+        String destinationPath = "target/filename.mp4";
+        Path path = Paths.get(destinationPath);
+        try {
+            Files.write(path, data);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return  driver;
-      //  ((CanRecordScreen) driver).startRecordingScreen();
+
     }
 
-
-    public static void tearDown(){
-
-        service.stop();
-    }
 }
